@@ -31,7 +31,7 @@ public class RehanApiCall {
                 {
                     "id": "1586821445019611",
                     "argument": {
-                      "sessionCookie": "AQEDATU0BGcAkXkyAAABmGdR1HoAAAGY93rXUVYAjDFtG3wccdcf9SI7laoXGnH4TXVtC1zmREvGqQpqi2jL-SETU1tWS8kQjaU3rj6BG5nDH6URICtUXHUAN_9UIcmOFIgSUoKuSXfEM6R5GOec6iW5",
+                      "sessionCookie": "",
                       "search": "VIT Software Engineer",
                        "numberOfResults": 10
                   
@@ -44,7 +44,7 @@ public class RehanApiCall {
             // Make POST request
             String response = client.post()
                     .uri(url)
-                    .header("X-Phantombuster-Key-1", "PG5As60Xfaa3M1vrTWAagSnd9igOnIcExTVgfz8V5Us")
+                    .header("X-Phantombuster-Key-1", "")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(requestBody)
                     .retrieve()
@@ -66,7 +66,7 @@ public class RehanApiCall {
             // Make POST request
             String response = client.get()
                     .uri(urlStatus)
-                    .header("X-Phantombuster-Key-1", "PG5As60Xfaa3M1vrTWAagSnd9igOnIcExTVgfz8V5Us")
+                    .header("X-Phantombuster-Key-1", "")
                    // .contentType(MediaType.APPLICATION_JSON)
                    // .body(requestBody)
                     .retrieve()
@@ -89,7 +89,7 @@ public class RehanApiCall {
             // Make POST request
             String response = client.get()
                     .uri(urlFetch)
-                    .header("X-Phantombuster-Key-1", "PG5As60Xfaa3M1vrTWAagSnd9igOnIcExTVgfz8V5Us")
+                    .header("X-Phantombuster-Key-1", "")
                     // .contentType(MediaType.APPLICATION_JSON)
                     // .body(requestBody)
                     .retrieve()
@@ -111,7 +111,7 @@ public class RehanApiCall {
             // Make POST request
             response = client.get()
                     .uri(urlJson)
-                    //   .header("X-Phantombuster-Key-1", "PG5As60Xfaa3M1vrTWAagSnd9igOnIcExTVgfz8V5Us")
+                    //   .header("X-Phantombuster-Key-1", "")
                     // .contentType(MediaType.APPLICATION_JSON)
                     // .body(requestBody)
                     .retrieve()
