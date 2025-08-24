@@ -14,6 +14,7 @@ public class AlumniProfile {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "\"current_role\"")
     private String currentRole;
 
     @Column(nullable = false)

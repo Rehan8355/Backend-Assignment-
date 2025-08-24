@@ -16,17 +16,30 @@ import java.util.stream.Collectors;
 public class AlumniService {
 
     private final AlumniProfileRepository repository;
-    private final PhantomBusterClient phantomBusterClient;
+    //private final PhantomBusterClient phantomBusterClient;
+    private final RehanApiCall   rehanApiCall;
 
     @Transactional
-    public List<AlumniProfileDto> searchAndSave(SearchRequest req) {
-        List<AlumniProfile> fetched = phantomBusterClient.searchAlumni(req);
-        List<AlumniProfile> saved = repository.saveAll(fetched);
-        return saved.stream().map(AlumniProfileDto::from).collect(Collectors.toList());
+    public String searchAndSave(SearchRequest req) {
+      //  List<AlumniProfile> fetched = phantomBusterClient.searchAlumniApi(req);
+         String  fetched = rehanApiCall.searchAlumniApi(req).toString();
+       // List<AlumniProfile> fetched = rehanApiCall.searchAlumniStatus(req);
+      //  List<AlumniProfile> fetched = rehanApiCall.searchAlumniFetch(req);
+
+      //String fetched = rehanApiCall.searchAlumniJSONFetch(req);
+
+
+      //  List<AlumniProfile> saved = repository.saveAll(fetched);
+      //  return saved.stream().map(AlumniProfileDto::from).collect(Collectors.toList());
+        return fetched;
     }
 
     @Transactional(readOnly = true)
     public List<AlumniProfileDto> getAll() {
-        return repository.findAll().stream().map(AlumniProfileDto::from).toList();
+        return repository.findAll()
+                .stream()
+                .map(AlumniProfileDto::from)
+                .collect(Collectors.toList());
     }
+
 }

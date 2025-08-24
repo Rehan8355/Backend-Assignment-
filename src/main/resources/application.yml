@@ -1,21 +1,24 @@
-#server:
-#  port: 8080
-#spring:
-#  datasource:
-#    url: ${DB_URL:jdbc:postgresql://localhost:5432/alumni_db}
-#    username: ${DB_USER:postgres}
-#    password: ${DB_PASSWORD:postgres}
-#  jpa:
-#    hibernate:
-#      ddl-auto: update # or validate if using Flyway
-#    properties:
-#      hibernate.format_sql: true
-#      hibernate.jdbc.time_zone: UTC
-#  jackson:
-#    serialization:
-#      WRITE_DATES_AS_TIMESTAMPS: false
-#
-#phantombuster:
-#  apiKey: ${PHANTOMBUSTER_API_KEY:}
-#  baseUrl: ${PHANTOMBUSTER_BASE_URL:https://api.phantombuster.com}
-#  # you can add script/agent ids as needed
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/alumni_db
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+      format_sql: true
+  #     jdbc:
+  #       time_zone: UTC
+
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+

@@ -18,11 +18,16 @@ public class AlumniController {
 
     private final AlumniService alumniService;
 
-    @PostMapping("/alumnissearch")
-    public ResponseEntity<ApiResponse<List<AlumniProfileDto>>> search(@Valid @RequestBody SearchRequest request) {
-        List<AlumniProfileDto> data = alumniService.searchAndSave(request);
-        return ResponseEntity.ok(new ApiResponse<>("success", data));
-    }
+//    @PostMapping("/alumni/search")
+//    public ResponseEntity<ApiResponse<List<AlumniProfileDto>>> search(@Valid @RequestBody SearchRequest request) {
+//        List<AlumniProfileDto> data = alumniService.searchAndSave(request);
+//        return ResponseEntity.ok(new ApiResponse<>("success", data));
+//    }
+@PostMapping("/alumni/search")
+public String search(@Valid @RequestBody SearchRequest request) {
+    String data = alumniService.searchAndSave(request);
+    return data;
+}
 
     @GetMapping("/alumni/all")
     public ResponseEntity<ApiResponse<List<AlumniProfileDto>>> getAll() {
