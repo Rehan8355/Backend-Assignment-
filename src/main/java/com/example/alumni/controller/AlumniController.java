@@ -1,37 +1,33 @@
 package com.example.alumni.controller;
 
-import com.example.alumni.dto.ApiResponse;
-import com.example.alumni.dto.AlumniProfileDto;
-import com.example.alumni.dto.SearchRequest;
-import com.example.alumni.service.AlumniService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.alumni.pojo.AlumniResponse;
+import com.example.alumni.pojo.SearchRequest;
+import com.example.alumni.service.AlumniService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/alumni")
 @RequiredArgsConstructor
 public class AlumniController {
 
-    private final AlumniService alumniService;
+	private final AlumniService alumniService;
 
-//    @PostMapping("/alumni/search")
-//    public ResponseEntity<ApiResponse<List<AlumniProfileDto>>> search(@Valid @RequestBody SearchRequest request) {
-//        List<AlumniProfileDto> data = alumniService.searchAndSave(request);
-//        return ResponseEntity.ok(new ApiResponse<>("success", data));
-//    }
-@PostMapping("/alumni/search")
-public String search(@Valid @RequestBody SearchRequest request) {
-    String data = alumniService.searchAndSave(request);
-    return data;
-}
+	@PostMapping("/search")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<AlumniResponse> searchAlumniProfile(@RequestBody SearchRequest searchRequest) {
+		ResponseEntity<AlumniResponse> alumniProfiles = alumniService.searchAlumniProfile(searchRequest);
+		return alumniProfiles;
+	}
 
-    @GetMapping("/alumni/all")
-    public ResponseEntity<ApiResponse<List<AlumniProfileDto>>> getAll() {
-        List<AlumniProfileDto> data = alumniService.getAll();
-        return ResponseEntity.ok(new ApiResponse<>("success", data));
-    }
+	
 }

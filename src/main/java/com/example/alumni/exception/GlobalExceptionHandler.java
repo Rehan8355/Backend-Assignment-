@@ -1,28 +1,30 @@
 package com.example.alumni.exception;
 
-import com.example.alumni.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.example.alumni.pojo.ErrorResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidation(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
-                .collect(Collectors.toMap(e -> e.getField(), e -> e.getDefaultMessage(), (a,b) -> a));
-        return ResponseEntity.badRequest().body(new ApiResponse<>("error", errors));
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+    	ErrorResponse errorResponse = new ErrorResponse();
+    	errorResponse.setStatus("error");
+    	errorResponse.setMessage(ex.getMessage());
+    	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<String>> handleGeneric(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>("error", ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+    	ErrorResponse errorResponse = new ErrorResponse();
+    	errorResponse.setStatus("error");
+    	errorResponse.setMessage(ex.getMessage());
+    	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponse);
     }
 }

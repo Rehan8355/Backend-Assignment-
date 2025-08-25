@@ -1,24 +1,19 @@
 server:
   port: 8080
 
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5433/alumni_db
-    username: postgres
-    password: 1234
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-      format_sql: true
-  #     jdbc:
-  #       time_zone: UTC
-
-  jackson:
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
-
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5433/alumni_db
+#    username: postgres
+#    password: 1234
+#    driver-class-name: org.postgresql.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#      format_sql: true
+#  #     jdbc:
+#  #       time_zone: UTC
 
