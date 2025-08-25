@@ -1,113 +1,60 @@
-Alumni LinkedIn Profile Searcher
-A Spring Boot backend application that enables users to search for the LinkedIn profiles of alumni from a specified educational institution. The application utilizes the PhantomBuster API to scrape data from LinkedIn, processes the information, and serves it to users with an easy REST API.
+# 🎓 Alumni LinkedIn Profile Searcher
 
-Table of Contents
-Objective
+A production-ready **Spring Boot** backend that searches and returns **LinkedIn alumni profiles** for a given educational institution.  
+It integrates with **PhantomBuster – LinkedIn Search Export Agent** to launch a scrape, monitor it, fetch results, and return a clean JSON response.
 
-Features
-Architecture
-API Endpoints
-Request & Response Examples
-Setup & Configuration
-How It Works
-Error Handling
-Known Limitations
-Credits & License
+> ⚠️ **Note**: Scraping LinkedIn content may violate LinkedIn’s Terms of Service. Use responsibly and only with accounts and data you’re authorized to access.
 
-Objective
-Develop a Spring Boot web application for searching LinkedIn profiles of alumni from a specific educational institution. The system leverages PhantomBuster's automation agents to fetch and serve alumni data based on user-provided search criteria.
+---
 
-Features
-RESTful Alumni Search API
+## ✨ Features
 
-Integration with PhantomBuster: Launches, monitors, and fetches data from PhantomBuster agents.
+- 🔎 **RESTful search API** for alumni profiles
+- ⚡ **PhantomBuster integration** (launch → poll → fetch output)
+- 🎯 **Flexible filters**: university, designation, pass-out year
+- 🧰 **Robust error handling** with consistent JSON error shape
+- 🧩 **Modular architecture** (Controller / Service / HTTP client / DTOs)
+- 📝 **Config via properties or environment variables**
 
-Flexible Search: Filter by university, current designation, and pass-out year.
+---
 
-Automated Data Retrieval: Parses and delivers LinkedIn alumni profiles.
+## 🧱 Architecture
 
-Centralized Error Handling
+- **Controller** — Validates input and returns DTO responses  
+- **Service** — Orchestrates PhantomBuster agent lifecycle  
+- **HTTP Client** — Generic REST client (e.g., `RestTemplate`/`WebClient`)  
+- **DTOs/POJOs** — Request & Response models  
+- **GlobalExceptionHandler** — Centralized error responses
 
-Ready for Extension: Clean, modular service structure.
+### 🔄 High-level workflow
 
-Architecture
-Controller Layer: Accepts user search requests and returns results.
+1. Client calls `POST /api/alumni/search` with filters.  
+2. Service launches PhantomBuster agent → receives `containerId`.  
+3. Service **polls** container status until finished (or times out).  
+4. Service fetches **output JSON file URL**.  
+5. Service downloads & parses alumni data → returns structured JSON.
 
-Service Layer: Orchestrates PhantomBuster agent launches, monitors status, fetches results.
+---
 
-HTTP Engine: Generic utility to interact with external REST services (PhantomBuster).
+## 🚀 API
 
-POJOs: Map request and response bodies.
+### Search Alumni Profiles
 
-Exception Handling: Global exception handler for graceful error responses.
+**URL**: `/api/alumni/search`  
+**Method**: `POST`  
+**Content-Type**: `application/json`
 
-Workflow Diagram
-User hits /api/alumni/search with search parameters.
-
-Service launches PhantomBuster agent → gets containerId.
-
-Service checks agent status until finished.
-
-Service fetches agent output → retrieves data file URL.
-
-Service downloads and parses alumni JSON data.
-
-Filtered data is returned in API response.
-
-API Endpoints
-Search Alumni Profiles
-URL: /api/alumni/search
-
-Method: POST
-
-Request Body:
-
-json
-{
-  "university": "NAME_OF_THE_UNIVERSITY",
-  "designation": "CURRENT_DESIGNATION",
-  "passoutYear": "OPTIONAL_PASSOUT_YEAR"
-}
-Success Response: 200 OK
-
-json
-{
-  "status": "success",
-  "data": [
-    {
-      "name": "John Doe",
-      "currentRole": "Software Engineer",
-      "university": "Example University",
-      "location": "San Francisco, CA",
-      "linkedinHeadline": "Tech Enthusiast | Problem Solver",
-      "year": "2015-2019"
-    },
-    ...
-  ]
-}
-Error Response: e.g., 500 Internal Server Error
-
-json
-{
-  "status": "error",
-  "message": "Error description here"
-}
-Request & Response Examples
-Sample POST request via Postman:
-
-POST /api/alumni/search
-
-Body (JSON):
-
-json
+#### Request Body
+```json
 {
   "university": "IIT Bombay",
   "designation": "Software Engineer",
   "passoutYear": "2020"
 }
-Sample Success Response:
-
+✅ Success Response (200)
 json
+Copy
+Edit
 {
   "status": "success",
   "data": [
@@ -121,63 +68,136 @@ json
     }
   ]
 }
-Setup & Configuration
-Prerequisites
+❌ Error Response (500)
+json
+Copy
+Edit
+{
+  "status": "error",
+  "message": "Unable to fetch alumni data"
+}
+Example curl
+bash
+Copy
+Edit
+curl -X POST http://localhost:8080/api/alumni/search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "university": "IIT Bombay",
+    "designation": "Software Engineer",
+    "passoutYear": "2020"
+  }'
+⚙️ Setup & Configuration
+✅ Prerequisites
 Java 17+
 
 Maven
 
-PhantomBuster account (with working agent & API key)
+PhantomBuster account
 
-Internet connection
+A configured LinkedIn Search Export Agent
 
-Application Properties
-Configure these in your application.properties:
+API key
 
-text
-# PhantomBuster API Key
-phantombuster.apiKey=YOUR_PHANTOMBUSTER_API_KEY
+Session cookie (if required by your agent)
 
-# API Endpoints
+Internet connectivity
+
+🔑 Application Properties (application.properties)
+You can keep secrets in env vars and reference them here.
+
+properties
+Copy
+Edit
+# === PhantomBuster Auth ===
+phantombuster.apiKey=${PHANTOMBUSTER_API_KEY}
+
+# === PhantomBuster Endpoints ===
 phantomBuster.launchAgentUrl=https://api.phantombuster.com/api/v2/agents/launch
 phantomBuster.checkAgentStatusUrl=https://api.phantombuster.com/api/v2/containers/fetch?id={containerId}
 phantomBuster.fetchDataUrl=https://api.phantombuster.com/api/v2/containers/fetch-output?id={containerId}&mode=json
 
-# Agent Launch
-launchAgentRequestBody.id=PASTE-YOUR-AGENT-ID
-launchAgentRequestBody.sessionCookie=PASTE-YOUR-AUTH-SESSIONCOOKIE
-Build & Run
+# === Agent Settings ===
+launchAgentRequestBody.id=${PHANTOMBUSTER_AGENT_ID}
+launchAgentRequestBody.sessionCookie=${PHANTOMBUSTER_SESSION_COOKIE}
+
+# === Optional Tuning ===
+alumni.poll.maxAttempts=20         # how many times to poll the container
+alumni.poll.delayMillis=5000       # delay between polls
+alumni.download.timeoutMillis=30000
+🌱 Environment Variables (recommended)
 bash
+Copy
+Edit
+export PHANTOMBUSTER_API_KEY=your_api_key_here
+export PHANTOMBUSTER_AGENT_ID=your_agent_id_here
+export PHANTOMBUSTER_SESSION_COOKIE=your_session_cookie_here
+You can also use a .env file + a loader if you prefer.
+
+▶️ Build & Run
+Using Maven:
+
+bash
+Copy
+Edit
 mvn clean install
 java -jar target/alumni-profile-searcher-0.0.1-SNAPSHOT.jar
-App will start on localhost:8080 by default.
+The service will start at:
 
-How It Works
-User submits a search query via API.
+arduino
+Copy
+Edit
+http://localhost:8080
+⚡ How It Works (Operational Notes)
+The service launches your LinkedIn agent with input parameters.
 
-Spring Boot app launches the PhantomBuster agent using provided criteria.
+It polls PhantomBuster for container status until it is finished (or times out).
 
-The app polls agent status (running or finished). If running, thread is put on hold (e.g., 60 seconds sleep) to allow agent to collect data.
+Some agents only expose outputs after aborting:
 
-Manual intervention needed: For some PhantomBuster agents, results are not available until the agent is forcibly aborted (currently must be done on the PhantomBuster site).
+If so, you must manually abort the agent in your PhantomBuster dashboard.
 
-Once the agent is finished, the app fetches the output (a JSON file URL) and downloads it.
+Alternatively, adjust your agent settings to produce output on completion.
 
-Profiles are parsed and returned in a structured JSON response.
+After output is available, the service downloads the JSON and maps it into response DTOs.
 
-Error Handling
-All errors/exceptions are caught centrally and returned in a standard format:
+⚠️ Known Limitations & Manual Steps
+Agent abortion requirement: Certain PhantomBuster agents expose data only when aborted.
+
+There is no public API to abort programmatically.
+
+Workaround: The service polls and you may need to abort manually in the PhantomBuster dashboard if your agent behaves this way.
+
+Scrape latency: Expect ~1–2 minutes for the agent to gather data before it’s available.
+
+LinkedIn ToS: Ensure your use complies with LinkedIn’s Terms of Service.
+
+Quick checklist before first request
+Log in to PhantomBuster.
+
+Create/configure LinkedIn Search Export agent.
+
+Copy Agent ID & Session Cookie → set them in env/properties.
+
+Start the Spring Boot app.
+
+Call POST /api/alumni/search.
+
+🛑 Error Handling
+All errors return a consistent JSON shape:
 
 json
+Copy
+Edit
 {
   "status": "error",
-  "message": "Description of issue"
+  "message": "Description of the issue"
 }
+Common cases:
 
+Missing/invalid config → 500 with message
 
-Known Limitations & Manual Steps :
+PhantomBuster API errors → 502/500 with upstream message
 
-Agent Abortion Needed:
-PhantomBuster allows you for fetching the scrape data only when the agent is aborted and there is no support or endpoint for aborting the agent by code and due to which i hoild the thread for 1min in code in this time we have to go to dashboard where agent is running and abort the agent then when thread back further execution happens and data fetch from phantomBuster by call the container/fetch-output endpoint .
+Timeout waiting for agent output → 504 Gateway Timeout (recommended)
 
-and one more thing because agent takes times for fetching the data so thats why there is also need for sometime holding the thraed so that agent fetch data from linkedin.   
